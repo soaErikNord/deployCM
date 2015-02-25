@@ -3,9 +3,10 @@
 ##Clone the repository
 
 ```git
-git clone https://github.com/
+git clone https://github.com/soaErikNord/deployCM
 cd deployCM
 npm install
+npm install request
 ```
 
 ##Start the application
