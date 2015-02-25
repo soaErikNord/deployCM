@@ -15,6 +15,4 @@ npm start
 
 ##Use the application
 
-```node
-npm start
-```
+[http://localhost:3000/theme](http://localhost:3000/theme)
