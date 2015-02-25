@@ -3,7 +3,7 @@
 ##Clone the repository
 
 ```git
-git clone https://github.com/soaErikNord/deployCM
+git clone https://github.com/soaErikNord/deployCM.git
 cd deployCM
 npm install
 ```
