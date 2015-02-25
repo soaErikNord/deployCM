@@ -1,0 +1,7 @@
+extends layout
+
+block content
+	h1= title
+	form#formDeployCM(name="deployCM",method="post",action="/deployCM")
+		input#inputTheme(type="input", name="theme", placeholder="Enter theme", )
+		button#btnSubmit(type="submit") submit

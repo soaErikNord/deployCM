@@ -1,0 +1,12 @@
+extends layout
+
+block content
+	h1= title
+	form#formDeployCM(name="deployCM",method="post",action="/deployCM")
+		input(type='radio', name='theme', value="Default")
+		| Default
+		br
+		input(type='radio', name='theme', value="Developer")
+		| Developer
+		br
+		button#btnSubmit(type="submit") submit

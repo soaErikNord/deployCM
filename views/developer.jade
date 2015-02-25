@@ -1,0 +1,12 @@
+extends layout
+
+block content
+	h1= title
+	form#formDeployDefault(name="deploydeveloper",method="post",action="/deployDefault")
+		input#inputTenantId(type="text", placeholder="Enter Tenant Id", name="tenantId")
+		br
+		input#inputDefaultConsoleAddress(type="text", placeholder="Enter Default Console Address", name="defaultConsoleAddress")
+		br
+		input#inputDeveloperConsoleAddress(type="text", placeholder="Enter Developer Console Address", name="developerConsoleAddress")
+		br
+		button#btnSubmit(type="submit") Generate Script
