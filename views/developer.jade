@@ -2,11 +2,15 @@ extends layout
 
 block content
 	h1= title
-	form#formDeployDefault(name="deploydeveloper",method="post",action="/deployDefault")
-		input#inputTenantId(type="text", placeholder="Enter Tenant Id", name="tenantId")
-		br
-		input#inputDefaultConsoleAddress(type="text", placeholder="Enter Default Console Address", name="defaultConsoleAddress")
-		br
-		input#inputDeveloperConsoleAddress(type="text", placeholder="Enter Developer Console Address", name="developerConsoleAddress")
-		br
-		button#btnSubmit(type="submit") Generate Script
+	h2="Assuming that a Default theme has already been deployed"
+	form#formDeployDeveloper(name="deploydeveloper",method="post",action="/deployDeveloper")
+		input#inputTenantId(type="text", placeholder="Enter Tenant Id", name="tenantId", style="width:300px;margin-bottom: 10px;display: block;")
+		input#inputDefaultHostName(type="text", placeholder="Enter Default Host Name", name="defaultHostName", style="width:300px;margin-bottom: 10px;display: block;")
+		input#inputDeveloperHostName(type="text", placeholder="Enter Developer Host Name", name="developerHostName", style="width:300px;margin-bottom: 10px;display: block;")
+		input#inputDeveloperConsoleAddress(type="text", placeholder="Enter Developer Console Address", name="developerConsoleAddress", style="width:300px;margin-bottom: 10px;display: block;")
+		h3="Database connection information (Sorry, only supports MySQL currently)"
+		input#inputHost(type="text", placeholder="Enter Database Host Address (IP Address w/no port)", name="dbHost", style="width:300px;margin-bottom: 10px;display: block;")
+		input#inputUser(type="text", placeholder="Enter Database User", name="dbUser", style="width:300px;margin-bottom: 10px;display: block;")
+		input#inputPassword(type="password", placeholder="Enter Database Password", name="dbPassword", style="width:300px;margin-bottom: 10px;display: block;")
+		input#inputDatabaseName(type="text", placeholder="Enter Database Name", name="dbName", style="width:300px;margin-bottom: 10px;display: block;")
+		button#btnSubmit(type="submit") Submit

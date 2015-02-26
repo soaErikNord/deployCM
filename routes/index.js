@@ -1,5 +1,9 @@
 var express = require('express');
 var request = require('request');
+var mysql = require('mysql');
+
+var developerTheme = false;
+var defaultTheme = false;
 
 var router = express.Router();
 
@@ -37,31 +41,56 @@ router.get('/underconstruction', function(req, res) {
 	res.render('underconstruction', { title: 'Under Construction' })
 });
 
+router.get('/themeerror', function(req, res) {
+	res.render('themeerror', { title: 'Error!!!!!!!' })
+});
+
 /* POST to figure out the desired theme to build out */
 router.post('/deployCM', function(req, res) {
+	console.log('Enter /deployCM');
 	// Retrieve form values
+	defaultTheme = false;
+	developerTheme = false;
+
 	var theme = req.body.theme;
 	console.log(req.body.theme);
 
-	// redirect to the proper theme build out
-	if (theme != null && theme === 'Default') {
+	var length = theme.length;
+	for (var i = 0; i < length; i++) {
+		var themeType = theme[i];
+		if (themeType.length ===1) {
+			themeType = theme;
+		}
+		console.log('themeType==' + themeType);
+		if (themeType === 'Default') {
+			console.log('Setting Default to true');
+			defaultTheme = true;
+		};
+		if (themeType === 'Developer') {
+			console.log('Setting Developer to true');
+			developerTheme = true;
+		};
+	};
+
+	if (defaultTheme) {
 		// Update the address bar
 		res.location("default");
 
 		// redirect to default
 		res.redirect("default");
-	} else {
-		res.location("underconstruction");
-		res.redirect("underconstruction");
+	};
+	if (developerTheme) {
 		// Update the address bar
-		//res.location("developer");
+		res.location("developer");
 
 		// redirect to developer
-		//res.redirect("developer");
-	}
+		res.redirect("developer");
+	};
+	console.log('Exit /deployCM');
 });
 
 router.post('/deploydefault', function(req, res) {
+	console.log('Enter /deploydefault');
 	// Variables
 	var api = '/api/tenants';
 	var contentType = 'application/x-www-form-urlencoded';
@@ -81,8 +110,6 @@ router.post('/deploydefault', function(req, res) {
 
 	console.log(path);
 
-	//http://localhost:9900/api/tenants?FedMemderId=junk&TenantName=Junk&Address=http://junk.soa.local:9900&ConsoleAddress=http://junk.soa.local:9900/enterpriseapi&Theme=default&Email=administrator@junk.com&Password=password&ContactEmailAddress=no-reply@junk.comFromEmailAddress=no-reply@junk.com
-
 	var options = {
 		url: path,
 		method: "POST",
@@ -95,27 +122,96 @@ router.post('/deploydefault', function(req, res) {
   		if (!error && response.statusCode == 200) {
     		console.log(body); // Show the HTML for the Google homepage.
     		console.log(response.statusCode);
-    		res.location("success");
-    		res.redirect("success");
+    		if (developerTheme) {
+    			res.location("developer");
+    			res.redirect("developer");
+    		} else {
+    			res.location("success");
+    			res.redirect("success");
+    		}
     		//res.location("deployContent");
 			//res.redirect("deployContent");
   		} else {
   			console.log("error/error");
   			console.log(error);
+  			res.location("themeerror");
+			res.redirect("themeerror");
   		};
 	});
-
+	console.log('Exit /deploydefault');
 });
 
 router.post('/deploydeveloper', function(req, res) {
+	console.log('Enter /deploydeveloper');
 	// Retrieve form values
 	var tenantId = req.body.tenantId;
-	var defaultConsoleAddress = req.body.defaultConsoleAddress;
+	var defaultHostName = req.body.defaultHostName;
+	var developerHostName = req.body.developerHostName;
 	var developerConsoleAddress = req.body.developerConsoleAddress;
 
-	res.location("developerscript");
-	res.redirect("developerscript");
+	var virtualHost = defaultHostName + ',' + developerHostName;
 
+	var insertQuery = 'INSERT INTO TENANT_THEMES (TENANTID, THEME, VIRTUALHOST, CONSOLEADDRESS, THEMEIMPL) VALUES (' + tenantId + ', \'developer\', \'' + virtualHost + '\', \'' + developerConsoleAddress + '\', \'simpledev\');';
+	console.log('Insert Query: ', insertQuery);
+	var updateQuery = 'UPDATE TENANTS SET VIRTUALHOST=\'' + virtualHost + '\' WHERE TENANTID=' + tenantId + ';';
+	console.log('Update Query: ', updateQuery);
+
+	var connection = mysql.createConnection({
+		host	: req.body.dbHost,
+		user	: req.body.dbUser,
+		password: req.body.dbPassword,
+		database: req.body.dbName
+	});
+
+	connection.connect();
+
+	var success = false;
+
+	connection.query(insertQuery, function(err, rows, fields) {
+		if (!err) {
+			console.log('Insert Query successful!');
+			success = true;
+			console.log('Success===', success);
+		} else {
+			console.log('Error while inserting data.', err);
+		}
+	});
+
+	connection.query(updateQuery, function(err, rows, fields) {
+		if (!err) {
+			console.log('Update Query successful!');
+			success = true;
+			console.log('Success===', success);
+		} else {
+			console.log('Error while updating data.', err);
+		}
+
+		done(success, res);
+	});
+
+	connection.end();
+
+	//console.log('Success===', success);
+	//if (success) {
+		//res.location("success");
+		//res.redirect("success");
+	//} else {
+		//res.location("themeerror");
+		//res.redirect("themeerror");
+	//}
+	
+	console.log('Exit /deploydeveloper');
 });
+
+function done(success, res) {
+		console.log('Success===', success);
+		if (success) {
+			res.location("success");
+			res.redirect("success");
+		} else {
+			res.location("themeerror");
+			res.redirect("themeerror");
+		}
+	};
 
 module.exports = router;
